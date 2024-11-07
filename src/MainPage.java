@@ -1,8 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,14 +8,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReportPage {
+public class MainPage {
     private JFrame frame;
     private JTable resultTable;
     private JCheckBox nameCheckBox, ssnCheckBox, bdateCheckBox, addressCheckBox, sexCheckBox, salaryCheckBox, supervisorCheckBox, departmentCheckBox;
     private DefaultTableModel tableModel;
     private JTextArea selectedNamesArea;
 
-    public ReportPage() {
+    public MainPage() {
         frame = new JFrame("Employee Report");
         frame.setSize(1200, 700); // 화면 크기를 더 크게 설정
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -56,16 +54,24 @@ public class ReportPage {
         frame.add(supervisorCheckBox);
 
         departmentCheckBox = new JCheckBox("Department");
-        departmentCheckBox.setBounds(720, 50, 150, 25); // 크기를 더 크게 설정
+        departmentCheckBox.setBounds(720, 50, 150, 25);
         frame.add(departmentCheckBox);
 
-        JButton searchButton = new JButton("Search");
+        JButton searchButton = new JButton("검색");
         searchButton.setBounds(20, 90, 100, 25);
         frame.add(searchButton);
 
         JButton conditionSearchButton = new JButton("조건검색하기");
         conditionSearchButton.setBounds(1050, 20, 120, 25);
         frame.add(conditionSearchButton);
+
+        JButton averageSalaryButton = new JButton("그룹별 평균급여");
+        averageSalaryButton.setBounds(1050, 60, 120, 25);
+        frame.add(averageSalaryButton);
+
+        JButton addEmployeeButton = new JButton("직원 추가하기");
+        addEmployeeButton.setBounds(1050, 100, 120, 25);
+        frame.add(addEmployeeButton);
 
         tableModel = new DefaultTableModel() {
             @Override
@@ -115,6 +121,20 @@ public class ReportPage {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new SearchEmployeePage();
+            }
+        });
+
+        averageSalaryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new AverageSalaryPage();
+            }
+        });
+
+        addEmployeeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new AddEmployeePage();
             }
         });
 
@@ -215,13 +235,13 @@ public class ReportPage {
         StringBuilder selectedNames = new StringBuilder("Selected Names: ");
         for (int i = 0; i < resultTable.getRowCount(); i++) {
             if ((Boolean) resultTable.getValueAt(i, 0)) {
-                selectedNames.append(resultTable.getValueAt(i, 1)).append(", "); // Assuming Name is the second column
+                selectedNames.append(resultTable.getValueAt(i, 1)).append(", ");  // Assuming Name is the second column
             }
         }
         selectedNamesArea.setText(selectedNames.toString());
     }
 
     public static void main(String[] args) {
-        new ReportPage();
+        new MainPage();
     }
 }
