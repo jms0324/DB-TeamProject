@@ -110,8 +110,12 @@ public class AddEmployeePage {
         addButton.setBounds(230, 380, 150, 25);
         frame.add(addButton);
 
+        JButton backButton = new JButton("뒤로가기");
+        backButton.setBounds(230, 420, 150, 25);
+        frame.add(backButton);
+
         messageLabel = new JLabel("");
-        messageLabel.setBounds(20, 420, 360, 25);
+        messageLabel.setBounds(20, 460, 360, 25);
         frame.add(messageLabel);
 
         addButton.addActionListener(new ActionListener() {
@@ -135,6 +139,13 @@ public class AddEmployeePage {
                 } else {
                     messageLabel.setText("삽입 실패!");
                 }
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
             }
         });
 
@@ -168,6 +179,6 @@ public class AddEmployeePage {
     }
 
     public static void main(String[] args) {
-        new AddEmployeePage();
+        new MainPage();
     }
 }

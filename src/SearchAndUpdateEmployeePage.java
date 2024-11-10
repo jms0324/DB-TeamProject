@@ -1,6 +1,5 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -154,6 +153,10 @@ public class SearchAndUpdateEmployeePage {
         updateButton.setBounds(470, 600, 100, 25);
         frame.add(updateButton);
 
+        JButton backButton = new JButton("뒤로가기");
+        backButton.setBounds(1050, 20, 120, 25);
+        frame.add(backButton);
+
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -230,6 +233,13 @@ public class SearchAndUpdateEmployeePage {
                 }
 
                 executeSearch("수정 성공!"); // 테이블을 다시 로드하고 메시지 설정
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
             }
         });
 
@@ -443,6 +453,6 @@ public class SearchAndUpdateEmployeePage {
     }
 
     public static void main(String[] args) {
-        new SearchAndUpdateEmployeePage();
+        new MainPage();
     }
 }

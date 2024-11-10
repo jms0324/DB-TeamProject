@@ -1,6 +1,5 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -35,6 +34,10 @@ public class AverageSalaryPage {
         searchButton.setBounds(480, 20, 100, 25);
         frame.add(searchButton);
 
+        JButton backButton = new JButton("뒤로가기");
+        backButton.setBounds(1050, 20, 120, 25);
+        frame.add(backButton);
+
         tableModel = new DefaultTableModel() {
             @Override
             public Class<?> getColumnClass(int column) {
@@ -63,6 +66,13 @@ public class AverageSalaryPage {
                 String groupBy = (String) groupByBox.getSelectedItem();
                 String query = buildQuery(groupBy);
                 loadTableData(query, groupBy);
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
             }
         });
 
@@ -116,6 +126,6 @@ public class AverageSalaryPage {
     }
 
     public static void main(String[] args) {
-        new AverageSalaryPage();
+        new MainPage();
     }
 }
