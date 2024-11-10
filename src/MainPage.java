@@ -14,6 +14,8 @@ public class MainPage {
     private JCheckBox nameCheckBox, ssnCheckBox, bdateCheckBox, addressCheckBox, sexCheckBox, salaryCheckBox, supervisorCheckBox, departmentCheckBox;
     private DefaultTableModel tableModel;
     private JTextArea selectedNamesArea;
+    private JComboBox<String> sortFieldComboBox;
+    private boolean isAscending = true; // 기본 정렬은 오름차순으로
 
     public MainPage() {
         frame = new JFrame("Employee Report");
@@ -57,8 +59,24 @@ public class MainPage {
         departmentCheckBox.setBounds(720, 50, 150, 25);
         frame.add(departmentCheckBox);
 
+        JLabel sortFieldLabel = new JLabel("Sort by:");
+        sortFieldLabel.setBounds(20, 90, 100, 25);
+        frame.add(sortFieldLabel);
+
+        sortFieldComboBox = new JComboBox<>(new String[] {"Name", "Ssn", "Bdate", "Address", "Sex", "Salary"});
+        sortFieldComboBox.setBounds(100, 90, 130, 25);
+        frame.add(sortFieldComboBox);
+
+        JButton sortAscButton = new JButton("오름차순 정렬");
+        sortAscButton.setBounds(240, 90, 130, 25);
+        frame.add(sortAscButton);
+
+        JButton sortDescButton = new JButton("내림차순 정렬");
+        sortDescButton.setBounds(380, 90, 130, 25);
+        frame.add(sortDescButton);
+
         JButton searchButton = new JButton("검색");
-        searchButton.setBounds(20, 90, 100, 25);
+        searchButton.setBounds(520, 90, 100, 25);
         frame.add(searchButton);
 
         JButton conditionSearchButton = new JButton("조건검색하기");
@@ -92,21 +110,29 @@ public class MainPage {
         deleteButton.setBounds(1020, 550, 140, 25);
         frame.add(deleteButton);
 
+        // 검색 버튼 클릭 시
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<String> selectedFields = new ArrayList<>();
-                if (nameCheckBox.isSelected()) selectedFields.add("CONCAT(Fname, ' ', Minit, ' ', Lname) AS Name");
-                if (ssnCheckBox.isSelected()) selectedFields.add("Ssn");
-                if (bdateCheckBox.isSelected()) selectedFields.add("Bdate");
-                if (addressCheckBox.isSelected()) selectedFields.add("Address");
-                if (sexCheckBox.isSelected()) selectedFields.add("Sex");
-                if (salaryCheckBox.isSelected()) selectedFields.add("Salary");
-                if (supervisorCheckBox.isSelected()) selectedFields.add("(SELECT Fname FROM EMPLOYEE WHERE Ssn = e.Super_ssn) AS Supervisor");
-                if (departmentCheckBox.isSelected()) selectedFields.add("(SELECT Dname FROM DEPARTMENT WHERE Dnumber = e.Dno) AS Department");
+                executeSearch();
+            }
+        });
 
-                String query = buildQuery(selectedFields);
-                loadTableData(query, selectedFields);
+        // 오름차순 정렬 버튼 클릭 시
+        sortAscButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                isAscending = true;
+                executeSearch();
+            }
+        });
+
+        // 내림차순 정렬 버튼 클릭 시
+        sortDescButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                isAscending = false;
+                executeSearch();
             }
         });
 
@@ -141,6 +167,21 @@ public class MainPage {
         frame.setVisible(true);
     }
 
+    private void executeSearch() {
+        List<String> selectedFields = new ArrayList<>();
+        if (nameCheckBox.isSelected()) selectedFields.add("CONCAT(Fname, ' ', Minit, ' ', Lname) AS Name");
+        if (ssnCheckBox.isSelected()) selectedFields.add("Ssn");
+        if (bdateCheckBox.isSelected()) selectedFields.add("Bdate");
+        if (addressCheckBox.isSelected()) selectedFields.add("Address");
+        if (sexCheckBox.isSelected()) selectedFields.add("Sex");
+        if (salaryCheckBox.isSelected()) selectedFields.add("Salary");
+        if (supervisorCheckBox.isSelected()) selectedFields.add("(SELECT Fname FROM EMPLOYEE WHERE Ssn = e.Super_ssn) AS Supervisor");
+        if (departmentCheckBox.isSelected()) selectedFields.add("(SELECT Dname FROM DEPARTMENT WHERE Dnumber = e.Dno) AS Department");
+
+        String query = buildQuery(selectedFields);
+        loadTableData(query, selectedFields);
+    }
+
     private String buildQuery(List<String> selectedFields) {
         StringBuilder query = new StringBuilder("SELECT ");
         for (int i = 0; i < selectedFields.size(); i++) {
@@ -150,6 +191,13 @@ public class MainPage {
             }
         }
         query.append(" FROM EMPLOYEE e");
+        // 정렬 조건
+        String sortField = (String) sortFieldComboBox.getSelectedItem();
+        if (sortField != null) {
+            query.append(" ORDER BY ").append(sortField);
+            query.append(isAscending ? " ASC" : " DESC");
+        }
+
         return query.toString();
     }
 
