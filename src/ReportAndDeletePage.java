@@ -33,6 +33,7 @@ public class ReportAndDeletePage {
 
         ssnCheckBox = new JCheckBox("SSN");
         ssnCheckBox.setBounds(120, 50, 100, 25);
+        ssnCheckBox.setSelected(true); // 기본적으로 체크된 상태로 설정
         frame.add(ssnCheckBox);
 
         bdateCheckBox = new JCheckBox("Bdate");
@@ -228,9 +229,16 @@ public class ReportAndDeletePage {
     private void deleteSelectedEmployees() {
         List<String> selectedSSNs = new ArrayList<>();
         List<Integer> selectedRows = new ArrayList<>();
+        int ssnColumnIndex = getColumnIndex("Ssn"); // SSN 열 인덱스 동적으로 찾기
+
+        if (ssnColumnIndex == -1) {
+            JOptionPane.showMessageDialog(frame, "SSN 열은 직원 삭제시 꼭 필요합니다 다시 시도해주세요.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         for (int i = 0; i < resultTable.getRowCount(); i++) {
             if ((Boolean) resultTable.getValueAt(i, 0)) {
-                selectedSSNs.add((String) resultTable.getValueAt(i, 2)); // Assuming SSN is the third column
+                selectedSSNs.add((String) resultTable.getValueAt(i, ssnColumnIndex));
                 selectedRows.add(i);
             }
         }
@@ -251,10 +259,24 @@ public class ReportAndDeletePage {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, ssn);
-            pstmt.executeUpdate();
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Employee with SSN " + ssn + " deleted successfully.");
+            } else {
+                System.out.println("No employee found with SSN " + ssn);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private int getColumnIndex(String columnName) {
+        for (int i = 0; i < resultTable.getColumnCount(); i++) {
+            if (resultTable.getColumnName(i).equals(columnName)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void updateSelectedNamesArea() {
